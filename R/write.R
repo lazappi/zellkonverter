@@ -72,6 +72,7 @@
 #' @importFrom basilisk basiliskRun
 #' @importFrom Matrix sparseMatrix
 #' @importFrom DelayedArray is_sparse
+#' @importFrom SingleCellExperiment reducedDims
 writeH5AD <- function(sce, file, X_name = NULL, skip_assays = FALSE,
     compression = c("none", "gzip", "lzf"), version = NULL,
     verbose = NULL, ...) {
@@ -96,6 +97,12 @@ writeH5AD <- function(sce, file, X_name = NULL, skip_assays = FALSE,
     env <- zellkonverterAnnDataEnv(version)
     version <- gsub("zellkonverterAnnDataEnv-", "", slot(env, "envname"))
     .ui_info("Using {.field anndata} version {.field {version}}")
+
+    # If converting SpatialExperiment object, add spatial coords to reducedDims
+    if (class(sce) == "SpatialExperiment") {
+        coords <- SpatialExperiment::spatialCoords(sce) |> matrix(ncol = 2)
+        reducedDims(sce) <- c(reducedDims(sce), list(spatial = coords))
+    }
 
     file <- path.expand(file)
     basiliskRun(

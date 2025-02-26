@@ -186,32 +186,6 @@ SCE2AnnData <- function(
         adata_list$obsm <- red_dims
         cli::cli_progress_done()
     }
-   
-    if (class(sce) == "SpatialExperiment") {
-        tryCatch(
-            {
-                # Add spatial coordinates if they exist
-                spatial_coords <- spatialCoords(sce)
-                if (length(spatial_coords) > 0) {
-                    .ui_step(
-                        "Converting {.field spatialCoords} to {.field obsm}",
-                        msg_done = "{.field spatialCoords} converted to {.field obsm}"
-                    )
-                    spatial_coords <- .makeNumpyFriendly(spatial_coords, transpose = FALSE)
-                    spatial_coords <- r_to_py(as.matrix(spatial_coords))
-                    if (is.null(adata_list$obsm)) {
-                        adata_list$obsm <- list(spatial = spatial_coords)
-                    } else {
-                        adata_list$obsm <- c(adata_list$obsm, list(spatial = spatial_coords))
-                    }
-                    cli::cli_progress_done()
-                }
-            },
-            error = function(err) {
-                .ui_warn("The {.field spatialCoords} slot cannot be converted and was skipped")
-            }
-        )
-    }
 
     uns_list <- list()
     uns_list[["X_name"]] <- X_name
