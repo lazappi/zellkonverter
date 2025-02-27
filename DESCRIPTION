@@ -32,6 +32,7 @@ Imports:
     S4Vectors,
     SingleCellExperiment (>= 1.11.6),
     SummarizedExperiment,
+    SpatialExperiment,
     utils
 Suggests:
     anndata,
